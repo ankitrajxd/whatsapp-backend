@@ -1,11 +1,14 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { string, z } from "zod";
 
-interface IUser extends Document {
+export interface UserInput {
   name: string;
-  password: string;
   email: string;
-  profileImage: string;
+  password: string;
+}
+
+interface IUser extends Document, UserInput {
+  profileImage?: string;
 }
 
 const userSchema = new Schema<IUser>({
@@ -18,11 +21,11 @@ const userSchema = new Schema<IUser>({
     maxlength: 255,
   },
   password: { type: String, required: true, minlength: 5, maxlength: 1024 },
-  profileImage: string,
+  profileImage: String,
 });
 
 // validation function for validating user
-function validateUser(user: IUser) {
+function validateUser(user: UserInput) {
   const schema = z.object({
     name: z.string().min(3).max(50),
     email: z.string().email().min(5).max(255),
@@ -33,7 +36,7 @@ function validateUser(user: IUser) {
   if (!result.success) {
     return {
       success: false,
-      message: result.error.format(),
+      message: result.error.errors[0].message,
     };
   }
 
@@ -43,7 +46,10 @@ function validateUser(user: IUser) {
   };
 }
 
+
+
+
 //  Creating model from schema
 const User = mongoose.model<IUser>("User", userSchema);
 
-export { User, validateUser };
+export { User, validateUser, IUser };
