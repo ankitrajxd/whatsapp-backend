@@ -17,7 +17,7 @@ authRouter.post("/login", async (req, res) => {
   const result = validateLogin(user);
 
   if (!result.success) {
-    res.json({
+    res.status(400).json({
       success: false,
       message: result.message,
     });
@@ -30,7 +30,7 @@ authRouter.post("/login", async (req, res) => {
   });
 
   if (!existingUser) {
-    res.json({
+    res.status(400).json({
       success: false,
       message: "Incorrect email or password.",
     });
@@ -41,7 +41,7 @@ authRouter.post("/login", async (req, res) => {
   const isCorrect = await checkPassword(user.password, existingUser.password);
 
   if (!isCorrect) {
-    res.json({
+    res.status(400).json({
       success: false,
       message: "Incorrect email or password.",
     });
@@ -50,7 +50,7 @@ authRouter.post("/login", async (req, res) => {
 
   // create session
   createSession(res, existingUser?.id);
-  res.json({
+  res.status(200).json({
     success: true,
     message: "Login successful",
   });

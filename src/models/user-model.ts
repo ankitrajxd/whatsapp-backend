@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { string, z } from "zod";
+import { z } from "zod";
 
 export interface UserInput {
   name: string;
@@ -45,9 +45,6 @@ function validateUser(user: UserInput) {
     message: "Validation successful",
   };
 }
-
-
-
 
 //  Creating model from schema
 const User = mongoose.model<IUser>("User", userSchema);

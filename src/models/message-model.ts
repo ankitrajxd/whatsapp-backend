@@ -4,15 +4,17 @@ import { z } from "zod";
 interface IMessage extends Document {
   senderId: Types.ObjectId;
   receiverId: Types.ObjectId;
-  message: string;
+  content: string;
   timestamp: Date;
+  chatId: Types.ObjectId;
 }
 
 const messageSchema = new Schema<IMessage>({
   senderId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
   receiverId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
-  message: { type: String, required: true },
+  content: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
+  chatId: { type: Schema.Types.ObjectId, required: true, ref: "Chat" },
 });
 
 // creating model from schema
@@ -23,7 +25,7 @@ function validateMessage(message: IMessage) {
   const schema = z.object({
     senderId: z.string().length(24),
     receiverId: z.string().length(24),
-    message: z.string().min(1).max(500),
+    content: z.string().min(1).max(500),
     timestamp: z.date().optional(),
   });
 

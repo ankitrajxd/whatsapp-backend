@@ -2,6 +2,7 @@ import { Router } from "express";
 import { User, UserInput, validateUser } from "../models/user-model";
 import { hashPassword } from "../utils/hashPassword";
 import { createSession } from "../utils/handleSession";
+import { authMiddleware } from "../middlewares/auth-middleware";
 
 const userRouter = Router();
 
@@ -45,6 +46,38 @@ userRouter.post("/", async (req, res) => {
   createSession(res, newUser.id);
   res.send("User created successfully");
   return;
+});
+
+// get current user
+userRouter.get("/me", authMiddleware, async (req, res) => {
+  // get the user from db
+
+  const user = await User.findOne({
+    _id: req.user?.id,
+  });
+
+  if (!user) {
+    res.status(404).json({
+      success: false,
+      message: "User Not found",
+    });
+    return;
+  }
+
+  res.status(200).json({
+    success: true,
+    message: {
+      email: user.email,
+      name: user.name,
+      profileImage: user.profileImage,
+    },
+  });
+});
+
+//  get all users
+
+userRouter.get("/", authMiddleware, async (req, res) => {
+  
 });
 
 export { userRouter };

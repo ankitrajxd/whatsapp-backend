@@ -1,6 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import { verifySession } from "../utils/handleSession";
 
+// extending the reques interface
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: {
+      id: string;
+    };
+  }
+}
+
 export function authMiddleware(
   req: Request,
   res: Response,
@@ -24,5 +33,7 @@ export function authMiddleware(
     });
     return;
   }
+
+  req.user = { id: result.payload?.userId as string };
   next();
 }
