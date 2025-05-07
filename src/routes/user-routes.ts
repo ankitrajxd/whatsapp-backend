@@ -77,7 +77,17 @@ userRouter.get("/me", authMiddleware, async (req, res) => {
 //  get all users
 
 userRouter.get("/", authMiddleware, async (req, res) => {
-  
+
+  const users = await User.find({
+    _id: { $ne: req.user?.id },
+  }).select("-password -__v");
+
+  console.log(users);
+
+  res.status(200).json({
+    success: true,
+    message: users,
+  });
 });
 
 export { userRouter };

@@ -4,7 +4,7 @@ interface IChat extends Document {
   users: Types.ObjectId[];
   createdAt: Date;
 }
-
+ 
 const chatSchema = new Schema<IChat>({
   users: [
     {
