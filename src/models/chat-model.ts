@@ -1,10 +1,10 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
-interface IChat extends Document {
+export interface IChat extends Document {
   users: Types.ObjectId[];
   createdAt: Date;
 }
- 
+
 const chatSchema = new Schema<IChat>({
   users: [
     {

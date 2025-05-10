@@ -7,30 +7,8 @@ const chatRouter = Router();
 
 //====================================================================
 
-chatRouter.post("/", authMiddleware, async (req, res) => {
-  const { users } = req.body;
-
-  if (!Array.isArray(users) || users.length === 0) {
-    res.status(400).json({ message: "Users array is required." });
-    return;
-  }
-
-  const chat = new Chat({
-    users: users,
-    createdAt: Date.now(),
-  });
-
-  await chat.save();
-  res.status(201).json({
-    success: true,
-    data: chat,
-  });
-});
-
-//====================================================================
-
 //  find a chat
-chatRouter.get("/", authMiddleware, async (req, res) => {
+chatRouter.post("/", authMiddleware, async (req, res) => {
   const { receiverId } = req.body;
   const senderId = req.user?.id;
 
@@ -47,7 +25,24 @@ chatRouter.get("/", authMiddleware, async (req, res) => {
 });
 
 //====================================================================
+// create a new chat
+chatRouter.post("/new", authMiddleware, async (req, res) => {
+  const { otherUser } = req.body;
 
+  const chat = new Chat({
+    users: [req.user?.id, otherUser],
+    createdAt: Date.now(),
+  });
+
+  await chat.save();
+  res.status(201).json({
+    success: true,
+    data: chat,
+  });
+});
+
+//====================================================================
+// send a message
 chatRouter.post("/:chatId/messages", authMiddleware, async (req, res) => {
   const { chatId } = req.params;
   let sender = req.user?.id;
@@ -77,6 +72,7 @@ chatRouter.post("/:chatId/messages", authMiddleware, async (req, res) => {
 
 //====================================================================
 
+// get all messages for a chat
 chatRouter.get("/:chatId/messages", authMiddleware, async (req, res) => {
   const { chatId } = req.params;
 
@@ -97,5 +93,57 @@ chatRouter.get("/:chatId/messages", authMiddleware, async (req, res) => {
 });
 
 export { chatRouter };
+
+//====================================================================
+
+// get all chats for a user
+chatRouter.get("/all", authMiddleware, async (req, res) => {
+  const chats = await Chat.find({ users: req.user?.id });
+  res.status(200).json({ success: true, data: chats });
+});
+
+//====================================================================
+// get chat details by chatid
+
+chatRouter.get("/:chatId", authMiddleware, async (req, res) => {
+  const { chatId } = req.params;
+
+  const result = await Chat.findOne({
+    _id: chatId,
+  });
+  if (!result) {
+    res.status(404).json({ message: "Chat not found." });
+    return;
+  }
+  // filter the chat to exclude the current user and return the other user
+  const otherUser = result?.users.filter(
+    (user) => user.toString() !== req.user?.id
+  )[0];
+
+  res.status(200).json({
+    success: true,
+    message: otherUser,
+  });
+});
+
+//====================================================================
+// delete a chat route
+
+chatRouter.delete("/delete/:chatId", authMiddleware, async (req, res) => {
+  const { chatId } = req.params;
+
+  const result = await Chat.findOneAndDelete({
+    _id: chatId,
+  });
+  if (!result) {
+    res.status(404).json({ message: "Chat not found." });
+    return;
+  }
+  res.status(200).json({
+    success: true,
+    message: "Chat deleted successfully.",
+  });
+  return;
+});
 
 //====================================================================

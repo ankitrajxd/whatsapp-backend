@@ -5,6 +5,7 @@ export interface UserInput {
   name: string;
   email: string;
   password: string;
+  profileImage?: string;
 }
 
 interface IUser extends Document, UserInput {
@@ -30,6 +31,7 @@ function validateUser(user: UserInput) {
     name: z.string().min(3).max(50),
     email: z.string().email().min(5).max(255),
     password: z.string().min(5).max(1024),
+    profileImage: z.string().optional(),
   });
 
   const result = schema.safeParse(user);

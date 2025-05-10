@@ -40,6 +40,9 @@ userRouter.post("/", async (req, res) => {
     name: user.name,
     email: user.email,
     password: hashedPassword,
+    profileImage:
+      user.profileImage ||
+      "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg",
   });
 
   await newUser.save();
@@ -74,15 +77,13 @@ userRouter.get("/me", authMiddleware, async (req, res) => {
   });
 });
 
-//  get all users
+//====================================================================
 
+//  get all users or contacts
 userRouter.get("/", authMiddleware, async (req, res) => {
-
   const users = await User.find({
     _id: { $ne: req.user?.id },
   }).select("-password -__v");
-
-  console.log(users);
 
   res.status(200).json({
     success: true,
@@ -91,3 +92,23 @@ userRouter.get("/", authMiddleware, async (req, res) => {
 });
 
 export { userRouter };
+
+//====================================================================
+// get a user by id
+userRouter.get("/:id", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id).select("-password -__v");
+
+  if (!user) {
+    res.status(404).json({
+      success: false,
+      message: "User Not found",
+    });
+    return;
+  }
+
+  res.status(200).json({
+    success: true,
+    message: user,
+  });
+});

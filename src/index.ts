@@ -53,6 +53,8 @@ app.get("/protected", authMiddleware, (_req, res) => {
 
 // Socket.IO connection handler (optional, for joining rooms)
 io.on("connection", (socket) => {
+  console.log("A user connected");
+
   socket.on("joinChat", (chatId) => {
     socket.join(chatId);
   });
