@@ -51,6 +51,8 @@ userRouter.post("/", async (req, res) => {
   return;
 });
 
+//====================================================================
+
 // get current user
 userRouter.get("/me", authMiddleware, async (req, res) => {
   // get the user from db
@@ -70,6 +72,7 @@ userRouter.get("/me", authMiddleware, async (req, res) => {
   res.status(200).json({
     success: true,
     message: {
+      id: user._id,
       email: user.email,
       name: user.name,
       profileImage: user.profileImage,
