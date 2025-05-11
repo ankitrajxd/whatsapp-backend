@@ -135,7 +135,13 @@ chatRouter.delete("/delete/:chatId", authMiddleware, async (req, res) => {
   const result = await Chat.findOneAndDelete({
     _id: chatId,
   });
-  if (!result) {
+
+  //  also delete all the messages related to that chat
+  const deletemsgResult = await Message.deleteMany({
+    chatId,
+  });
+
+  if (!result || !deletemsgResult) {
     res.status(404).json({ message: "Chat not found." });
     return;
   }
@@ -147,3 +153,24 @@ chatRouter.delete("/delete/:chatId", authMiddleware, async (req, res) => {
 });
 
 //====================================================================
+
+// clear a chat
+
+chatRouter.delete("/clear/:chatId", authMiddleware, async (req, res) => {
+  const { chatId } = req.params;
+
+  const result = await Message.deleteMany({
+    chatId,
+  });
+
+  if (!result) {
+    res.status(404).json({ message: "Chat not found." });
+    return;
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Chat cleared successfully.",
+  });
+  return;
+});
