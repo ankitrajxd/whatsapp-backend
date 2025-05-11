@@ -61,6 +61,9 @@ chatRouter.post("/:chatId/messages", authMiddleware, async (req, res) => {
 
     await newMessage.save();
     // todo: implement realtime feature here
+    const io = req.app.get("io");
+    io.to(chatId).emit("newMessage", newMessage);
+
     res.status(201).json({ success: true, data: newMessage });
   } catch (error) {
     res
