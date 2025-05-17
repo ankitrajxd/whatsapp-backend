@@ -71,7 +71,7 @@ userRouter.get("/me", authMiddleware, async (req, res) => {
 
   res.status(200).json({
     success: true,
-    message: {
+    data: {
       id: user._id,
       email: user.email,
       name: user.name,
@@ -112,6 +112,6 @@ userRouter.get("/:id", authMiddleware, async (req, res) => {
 
   res.status(200).json({
     success: true,
-    message: user,
+    data: user,
   });
 });

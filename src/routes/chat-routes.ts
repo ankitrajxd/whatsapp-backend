@@ -84,7 +84,10 @@ chatRouter.get("/:chatId/messages", authMiddleware, async (req, res) => {
       chatId,
     });
 
-    res.json(messages);
+    res.status(200).json({
+      success: true,
+      data: messages,
+    });
     return;
   } catch (error) {
     res.status(401).json({
@@ -125,7 +128,7 @@ chatRouter.get("/:chatId", authMiddleware, async (req, res) => {
 
   res.status(200).json({
     success: true,
-    message: otherUser,
+    data: otherUser,
   });
 });
 
