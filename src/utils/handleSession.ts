@@ -13,7 +13,12 @@ export function createSession(res: Response, userId: string) {
     expiresIn: 60 * 60, // 1hr
   });
   // set the token in cookie headers
-  res.cookie("session", token);
+  res.cookie("session", token, {
+    httpOnly: true,
+    sameSite: "lax", // or "none" if frontend is on a different domain and using HTTPS
+    secure: process.env.NODE_ENV === "production", // true in production (HTTPS)
+    path: "/",
+  });
   return;
 }
 

@@ -57,6 +57,21 @@ authRouter.post("/login", async (req, res) => {
   return;
 });
 
+authRouter.post("/logout", async (req, res) => {
+  // clear the session
+  res.clearCookie("session", {
+    httpOnly: true,
+    sameSite: "lax", // or "none" if using "none" above
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
+  res.status(200).json({
+    success: true,
+    message: "Logout successful",
+  });
+  return;
+});
+
 function validateLogin(user: LoginInput) {
   const schema = z.object({
     email: z.string().email().min(5).max(255),

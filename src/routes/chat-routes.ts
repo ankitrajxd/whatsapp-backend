@@ -180,3 +180,41 @@ chatRouter.delete("/clear/:chatId", authMiddleware, async (req, res) => {
   });
   return;
 });
+
+// get the last message of a chat
+chatRouter.get("/lastmessage/:chatId", authMiddleware, async (req, res) => {
+  const { chatId } = req.params;
+
+  const result = await Message.findOne({
+    chatId,
+  })
+    .sort({ timestamp: -1 })
+    .limit(1);
+  if (!result) {
+    res.status(404).json({ message: "Chat not found." });
+    return;
+  }
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+  return;
+});
+
+// get the last active time of a user
+chatRouter.get("/lastactive/:userId", authMiddleware, async (req, res) => {
+  const { userId } = req.params;
+
+  const result = await Chat.findOne({
+    users: { $all: [req.user?.id, userId] },
+  });
+
+  if (!result) {
+    res.status(404).json({ message: "Chat not found." });
+    return;
+  }
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
