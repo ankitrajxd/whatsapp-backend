@@ -16,7 +16,7 @@ export function createSession(res: Response, userId: string) {
   res.cookie("session", token, {
     httpOnly: true,
     sameSite: "lax", // or "none" if frontend is on a different domain and using HTTPS
-    secure: process.env.NODE_ENV === "production", // true in production (HTTPS)
+    // secure: process.env.NODE_ENV === "production", // true in production (HTTPS)
     path: "/",
   });
   return;

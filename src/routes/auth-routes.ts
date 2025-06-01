@@ -62,7 +62,7 @@ authRouter.post("/logout", async (req, res) => {
   res.clearCookie("session", {
     httpOnly: true,
     sameSite: "lax", // or "none" if using "none" above
-    secure: process.env.NODE_ENV === "production",
+    // secure: process.env.NODE_ENV === "production",
     path: "/",
   });
   res.status(200).json({
