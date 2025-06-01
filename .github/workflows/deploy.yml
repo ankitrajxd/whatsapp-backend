@@ -31,11 +31,14 @@ jobs:
       - name: Install step
         run: "npm install"
 
+      - name: Build step
+        run: "npm run build"
+
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
           project: "ankit-whatsapp-ba-88"
-          entrypoint: "src/index.ts"
-          root: ""
+          entrypoint: "dist/index.js"
+          root: "dist"
           
           
