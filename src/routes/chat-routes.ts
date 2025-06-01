@@ -79,6 +79,14 @@ chatRouter.post("/:chatId/messages", authMiddleware, async (req, res) => {
 chatRouter.get("/:chatId/messages", authMiddleware, async (req, res) => {
   const { chatId } = req.params;
 
+  const chat = await Chat.findOne({ _id: chatId, users: req.user?.id });
+  if (!chat) {
+    res
+      .status(403)
+      .json({ message: "Forbidden: You do not have access to this chat." });
+    return;
+  }
+
   try {
     const messages = await Message.find({
       chatId,
@@ -133,10 +141,18 @@ chatRouter.get("/:chatId", authMiddleware, async (req, res) => {
 });
 
 //====================================================================
-// delete a chat route
+// delete a chat
 
 chatRouter.delete("/delete/:chatId", authMiddleware, async (req, res) => {
   const { chatId } = req.params;
+
+  const chat = await Chat.findOne({ _id: chatId, users: req.user?.id });
+  if (!chat) {
+    res
+      .status(403)
+      .json({ message: "Forbidden: You do not have access to this chat." });
+    return;
+  }
 
   const result = await Chat.findOneAndDelete({
     _id: chatId,
@@ -201,16 +217,16 @@ chatRouter.get("/lastmessage/:chatId", authMiddleware, async (req, res) => {
   return;
 });
 
-// get the last active time of a user
+// get the last active time of a user from messages
 chatRouter.get("/lastactive/:userId", authMiddleware, async (req, res) => {
   const { userId } = req.params;
 
-  const result = await Chat.findOne({
-    users: { $all: [req.user?.id, userId] },
+  const result = await Message.findOne({
+    senderId: userId,
   });
 
   if (!result) {
-    res.status(404).json({ message: "Chat not found." });
+    res.status(404).json({ message: "Message not found." });
     return;
   }
   res.status(200).json({
