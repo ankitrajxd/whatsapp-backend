@@ -38,7 +38,7 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "ankit-whatsapp-ba-88"
-          entrypoint: "dist/index.js"
+          entrypoint: "index.js"
           root: "dist"
           
           
